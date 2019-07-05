@@ -6,9 +6,13 @@
     left: 50vw;
     transform: translate(-50%, -50%);
     z-index: 50;
-    max-height: 80vh;
-    max-width: 80vw;
+
 }
+
+    .lightbox-image img {
+        max-height: 80vh;
+        max-width: 80vw;
+    }
 
 .lightbox-overlay {
     position: fixed;
@@ -17,4 +21,32 @@
     width: 100vw;
     height: 100vh;
     background-color: rgba(0,0,0,0.7);
+}
+
+.lightbox-controls {
+    position: fixed;
+    left: 50vw;
+    bottom: 3vh;
+    z-index: 100;
+    transform: translateX(-50%);
+    text-align: center;
+    color: white;
+}
+
+    .lightbox-controls span.lb-next, .lightbox-controls span.lb-prev {
+        cursor: pointer;
+        user-select: none;
+    }
+
+        .lightbox-controls span.lb-next:active, .lightbox-controls span.lb-prev:active {
+            color: darkorange;
+        }
+
+img[data-lightbox-index] {
+    cursor: pointer;
+}
+
+.lightbox-controls span.lb-disabled {
+    cursor: default;
+    color: gray;
 }
