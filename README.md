@@ -15,7 +15,7 @@ npm i lightbox-fs
 
 ### Usage:
 
-* To use the lightbox you can simply add a reference to the .js file and the .css files in your webpage.  
+* To use the lightbox you can simply add a reference to the .js file at the end of the body of your html and the .css file in the head of your html page.  
 
 * In the img tag of the image that you want to be a part of the lightbox, add a class **fs-lightbox**.  
 For example, "&lt;img src="image.png" class="fs-lightbox" /&gt;"
