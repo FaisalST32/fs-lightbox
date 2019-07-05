@@ -1,5 +1,16 @@
-﻿
-function PqbLightbox() {
+﻿/*
+ * Lightbox-FS
+ * Copyright 2019
+ * Author: Faisal Rashid
+ * All Rights Reserved.
+ * Use, reproduction, distribution, and modification of this code is subject to the terms and
+ * conditions of the MIT license, available at http://www.opensource.org/licenses/mit-license.php
+ *
+ * Project: https://github.com/FaisalST32/fs-lightbox
+ */
+
+
+function FsLightbox() {
 
     var _this = this;
 
@@ -17,7 +28,7 @@ function PqbLightbox() {
                         `;
 
     this.render = () => {
-        document.querySelectorAll('img.pqb-lightbox').forEach((img_el, index) => {
+        document.querySelectorAll('img.fs-lightbox').forEach((img_el, index) => {
             _this.imagesArray.push(img_el);
             img_el.setAttribute("data-lightbox-index", index);
             img_el.addEventListener('click', () => {
@@ -145,5 +156,5 @@ function PqbLightbox() {
     }
 }
 
-var pqbLightbox = new PqbLightbox;
-pqbLightbox.render();
+var fsLightbox = new FsLightbox;
+fsLightbox.render();

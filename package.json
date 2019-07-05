@@ -1,5 +1,5 @@
 {
-  "name": "fs-lightbox",
+  "name": "lightbox-fs",
   "version": "1.0.0",
   "description": "A lightweight lightbox with zero dependencies",
   "main": "index.js",
