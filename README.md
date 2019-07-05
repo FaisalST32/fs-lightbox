@@ -18,7 +18,7 @@ npm i lightbox-fs
 * To use the lightbox you can simply add a reference to the .js file and the .css files in your webpage.  
 
 * In the img tag of the image that you wan to be a part of the lightbox, add a class **fs-lightbox**.  
-For example, "<img src="image.png" class="fs-lightbox" />"
+For example, "&lt;img src="image.png" class="fs-lightbox" /&gt;"
 
 * That's it. When you click on the image, a lightbox preview of the image will appear.
   
