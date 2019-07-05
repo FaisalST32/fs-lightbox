@@ -1,9 +1,4 @@
 ﻿
-// A bare-minimum Lightbox plugin developed at PQube Business Solutions
-// Usage: Simply add the class "pqb-lightbox" to your img tag tag you want to appear in the lightbox
-// eg: <img src="/images/image.jpg" class="pqb-lightbox" />
-// Do not forget to include the css file also
-
 function PqbLightbox() {
 
     var _this = this;
