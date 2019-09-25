@@ -15,7 +15,10 @@
     left: 50vw;
     transform: translate(-50%, -50%);
     z-index: 50;
-
+    padding: 10px 10px 10px 10px;
+    background-color: #fff;
+    z-index: 100000;
+    border-radius: 5px;
 }
 
     .lightbox-image img {
@@ -30,16 +33,19 @@
     width: 100vw;
     height: 100vh;
     background-color: rgba(0,0,0,0.7);
+    z-index: 10000;
+
 }
 
 .lightbox-controls {
     position: fixed;
-    left: 50vw;
-    bottom: 3vh;
+    left: 0;
+    top: 0;
     z-index: 100;
-    transform: translateX(-50%);
     text-align: center;
-    color: white;
+    color: rgba(255,255,255,0.7);
+    z-index: 100000;
+
 }
 
     .lightbox-controls span.lb-next, .lightbox-controls span.lb-prev {
@@ -58,4 +64,54 @@ img[data-lightbox-index] {
 .lightbox-controls span.lb-disabled {
     cursor: default;
     color: gray;
+}
+
+.lightbox-controls span.lb-prev {
+    position: fixed;
+    top: 50vh;
+    left: 5vw;
+    font-size: 50px;
+    transform: translateY(-50%);
+}
+
+.lightbox-controls span.lb-next {
+    position: fixed;
+    top: 50vh;
+    right: 5vw;
+    font-size: 50px;
+    transform: translateY(-50%);
+}
+
+.lightbox-controls span.lb-close {
+    position: fixed;
+    top: 0px;
+    right: 20px;
+    font-size: 60px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+span.lb-close:hover, span.lb-next:hover, span.lb-prev:hover {
+    transition: all 200ms ease-in-out;
+
+    color: rgba(255,255,255,1);
+}
+
+
+
+@media screen and (max-width: 991px){
+
+    .lightbox-image img {
+        max-width: 70vw;
+    }
+
+    .lightbox-controls span.lb-next {
+        font-size: 40px;
+        right: 10px;
+    }
+
+    .lightbox-controls span.lb-prev {
+        font-size: 40px;
+        left: 10px;
+    }
 }

@@ -1,6 +1,6 @@
 {
   "name": "lightbox-fs",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "A lightweight lightbox with zero dependencies",
   "main": "index.js",
   "scripts": {

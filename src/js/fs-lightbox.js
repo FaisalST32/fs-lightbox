@@ -22,12 +22,19 @@ function FsLightbox() {
 
     let controlsHtml = `
                             <div class="lightbox-controls">
-                                <span class="lb-prev">&lt;&nbsp;Prev</span>&nbsp;&nbsp;|&nbsp;
-                                <span class="lb-next">Next&nbsp;&gt;</span>
+                                <span class="lb-prev">&#10094;</span>
+                                <span class="lb-next">&#10095;</span>
+                                <span class="lb-close">&times;</span>
                             </div>
                         `;
 
     this.render = () => {
+        this.imagesArray = [];
+
+        this.currentImage = null;
+    
+        this.isLightbox = false;
+
         document.querySelectorAll('img.fs-lightbox').forEach((img_el, index) => {
             _this.imagesArray.push(img_el);
             img_el.setAttribute("data-lightbox-index", index);
@@ -47,7 +54,6 @@ function FsLightbox() {
 
         var overlay = document.createElement('div');
         overlay.classList.add('lightbox-overlay');
-        overlay.addEventListener('click', this.hideLightbox);
         var imageContainer = document.createElement('div');
         imageContainer.classList.add('lightbox-image');
 
@@ -121,6 +127,10 @@ function FsLightbox() {
             document.querySelector(".lb-next").classList.add(['lb-disabled'])
         }
 
+        document.querySelector('.lb-close').addEventListener('click', () => {
+            _this.hideLightbox();
+        })
+
         showCounter();
 
     }
@@ -129,8 +139,11 @@ function FsLightbox() {
         let imgIndex = getCurrentImageIndex();
         let counter = document.createElement("span");
         let counter_Html = `<br/>${imgIndex + 1} of ${_this.imagesArray.length}`;
+        if(_this.currentImage.alt){
+            counter_Html += ` - ${_this.currentImage.alt}`;
+        }
         counter.innerHTML = counter_Html;
-        document.querySelector('.lightbox-controls').appendChild(counter);
+        document.querySelector('.lightbox-image').appendChild(counter);
     }
 
     function getCurrentImageIndex() {
@@ -138,21 +151,24 @@ function FsLightbox() {
     }
 
     function addKeyListeners() {
-        document.addEventListener('keydown', e => {
-            if (e.keyCode === 37 && _this.isLightbox) {
-                _this.prev();
-                return;
-            }
+        document.removeEventListener('keydown', bindKeys);
+        document.addEventListener('keydown', bindKeys);
+    }
 
-            else if (e.keyCode === 39 && _this.isLightbox) {
-                _this.next();
-                return;
-            }
-            else if (e.keyCode === 27 && _this.isLightbox) {
-                _this.hideLightbox();
-                return;
-            }
-        });
+    function bindKeys(e) {
+        if (e.keyCode === 37 && _this.isLightbox) {
+            _this.prev();
+            return;
+        }
+
+        else if (e.keyCode === 39 && _this.isLightbox) {
+            _this.next();
+            return;
+        }
+        else if (e.keyCode === 27 && _this.isLightbox) {
+            _this.hideLightbox();
+            return;
+        }
     }
 }
 
