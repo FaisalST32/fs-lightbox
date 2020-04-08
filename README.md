@@ -2,6 +2,10 @@
   
 A simple lightbox for your image gallery. This lightbox doesn't have any dependencies and can be used with any webpage.
 
+Here's a preview
+
+![fs-lightbox in action](https://apifr.azurewebsites.net/uploads/637050067281687241_fs-ligthbox.gif)
+
 ### CDN Links:
 
 [https://cdn.jsdelivr.net/gh/FaisalST32/fs-lightbox@latest/src/js/fs-lightbox.min.js](https://cdn.jsdelivr.net/gh/FaisalST32/fs-lightbox@latest/src/js/fs-lightbox.min.js)  
