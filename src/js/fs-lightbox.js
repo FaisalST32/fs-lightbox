@@ -94,7 +94,7 @@ function FsLightbox() {
    * @private
    */
   function initImages_() {
-    const imagesElement = body_.querySelectorAll(Selectors.LIGHTBOX);
+    const imagesElement = document.querySelectorAll(Selectors.LIGHTBOX);
 
     imagesElement.forEach((imageElement, index) => {
       imagesArray_.push(imageElement);
@@ -253,7 +253,6 @@ function FsLightbox() {
     const isNotFirst = currentIndex_ !== 0;
 
     isNotFirst && handleImageClicked_(imagesArray_[currentIndex_ - 1]);
-
   }
 
   /**
