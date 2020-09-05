@@ -8,6 +8,13 @@
  *
  * Project: https://github.com/FaisalST32/fs-lightbox
  */
+.lightbox {
+    display: none;
+}
+
+.lightbox--visible {
+    display: block;
+}
 
 .lightbox-image {
     position: fixed;
