@@ -9,168 +9,291 @@
  * Project: https://github.com/FaisalST32/fs-lightbox
  */
 
-
 function FsLightbox() {
+  /** @enum {string} */
+  const DomEvents = {
+    CLICK: 'click',
+    KEYDOWN: 'keydown',
+  };
 
-    var _this = this;
+  /** @enum {string} */
+  const Selectors = {
+    DATA_INDEX: 'data-lightbox-index',
+    DIV: 'div',
+    IMAGE: 'img',
+    LIGHTBOX_CLOSE: '.lb-close',
+    LIGHTBOX_CONTROL_DISABLED: 'lb-disabled',
+    LIGHTBOX_CONTROLS: 'lightbox-controls',
+    LIGHTBOX_IMAGE: 'lightbox-image',
+    LIGHTBOX_NEXT: '.lb-next',
+    LIGHTBOX_OVERLAY_VISIBLE: 'lightbox-overlay--visible',
+    LIGHTBOX_OVERLAY: 'lightbox-overlay',
+    LIGHTBOX_PREV: '.lb-prev',
+    LIGHTBOX_VISIBLE: 'lightbox--visible',
+    LIGHTBOX_ROOT: 'lightbox',
+    LIGHTBOX: 'img.fs-lightbox',
+    SPAN: 'span',
+  };
 
-    this.imagesArray = [];
+  /** @private {!Array<!Element>} */
+  const imagesArray_ = [];
 
-    this.currentImage;
+  /** @private {?Element} */
+  let currentImage_ = null;
 
-    this.isLightbox = false;
+  /** @private {number} */
+  let currentIndex_ = -1;
 
-    let controlsHtml = `
-                            <div class="lightbox-controls">
-                                <span class="lb-prev">&#10094;</span>
-                                <span class="lb-next">&#10095;</span>
-                                <span class="lb-close">&times;</span>
-                            </div>
-                        `;
+  /** @private {!Element} */
+  const body_ = document.querySelector('body');
 
-    this.render = () => {
-        this.imagesArray = [];
+  /** @private {string} */
+  const controlsHtml = `
+    <span class="lb-prev">&#10094;</span>
+    <span class="lb-next">&#10095;</span>
+    <span class="lb-close">&times;</span>
+  `;
 
-        this.currentImage = null;
-    
-        this.isLightbox = false;
+  /** @private {?Element} */
+  let element_ = null;
 
-        document.querySelectorAll('img.fs-lightbox').forEach((img_el, index) => {
-            _this.imagesArray.push(img_el);
-            img_el.setAttribute("data-lightbox-index", index);
-            img_el.addEventListener('click', () => {
-                _this.lightbox(img_el);
-            });
-        });
+  /** @private {?Element} */
+  let overlay_ = null;
 
-        addKeyListeners();
+  /** @private {?Element} */
+  let imageContainer_ = null;
 
+  /** @private {?Element} */
+  let image_ = null;
+
+  /** @private {?Element} */
+  let controls_ = null;
+
+  /** @private {?Element} */
+  let counter_ = null;
+
+  /** @private {?Element} */
+  let prevControl_ = null;
+
+  /** @private {?Element} */
+  let nextControl_ = null;
+
+  /** @private {?Element} */
+  let closeControl_ = null;
+
+  /**
+   * Initializes the library.
+   */
+  this.render = () => {
+    initImages_();
+    initElements_();
+  }
+
+  /**
+   * Initializes images array.
+   * @private
+   */
+  function initImages_() {
+    const imagesElement = document.querySelectorAll(Selectors.LIGHTBOX);
+
+    imagesElement.forEach((imageElement, index) => {
+      imagesArray_.push(imageElement);
+      imageElement.setAttribute(Selectors.DATA_INDEX, index);
+      imageElement.addEventListener(DomEvents.CLICK, () => {
+        handleImageClicked_(imageElement);
+      });
+    });
+  }
+
+  /**
+   * Initializes library elements.
+   * @private
+   */
+  function initElements_() {
+    initRoot_();
+    initOverlay_();
+    initImage_();
+    initControls_();
+    initCounter_();
+  }
+
+  /**
+   * Initializes root element.
+   * @private
+   */
+  function initRoot_() {
+    element_ = document.createElement(Selectors.DIV);
+    element_.classList.add(Selectors.LIGHTBOX_ROOT);
+    body_.appendChild(element_)
+  }
+
+  /**
+   * Initializes overlay element.
+   * @private
+   */
+  function initOverlay_() {
+    overlay_ = document.createElement(Selectors.DIV);
+    overlay_.classList.add(Selectors.LIGHTBOX_OVERLAY);
+    element_.appendChild(overlay_);
+  }
+
+  /**
+   * Initializes imageContainer and image element.
+   * @private
+   */
+  function initImage_() {
+    imageContainer_ = document.createElement(Selectors.DIV);
+    imageContainer_.classList.add(Selectors.LIGHTBOX_IMAGE);
+    image_ = document.createElement(Selectors.IMAGE)
+    imageContainer_.appendChild(image_);
+    element_.appendChild(imageContainer_);
+  }
+
+  /**
+   * Initializes controls.
+   * @private
+   */
+  function initControls_() {
+    controls_ = document.createElement(Selectors.DIV);
+    controls_.classList.add(Selectors.LIGHTBOX_CONTROLS);
+    controls_.innerHTML = controlsHtml;
+    element_.appendChild(controls_);
+
+    prevControl_ = element_.querySelector(Selectors.LIGHTBOX_PREV)
+    nextControl_ = element_.querySelector(Selectors.LIGHTBOX_NEXT);
+    closeControl_ = element_.querySelector(Selectors.LIGHTBOX_CLOSE);
+
+    prevControl_.addEventListener(DomEvents.CLICK, prev_);
+    nextControl_.addEventListener(DomEvents.CLICK, next_);
+    closeControl_.addEventListener(DomEvents.CLICK, hideLightbox_);
+  }
+
+  /**
+   * Initializes counter element.
+   * @private
+   */
+  function initCounter_() {
+    counter_ = document.createElement(Selectors.SPAN);
+    imageContainer_.appendChild(counter_);
+  }
+
+  /**
+   * Initializes key listeners.
+   * @private
+   */
+  function initKeyListeners_() {
+    document.addEventListener(DomEvents.KEYDOWN, handleKeyDownEvent_);
+  }
+
+  /**
+   * Removes key listeners.
+   * @private
+   */
+  function removeKeyListeners_() {
+    document.removeEventListener(DomEvents.KEYDOWN, handleKeyDownEvent_);
+  }
+
+  /**
+   * Handles keydow events.
+   * @param {!Event} event
+   */
+  function handleKeyDownEvent_(event) {
+    const isRightArrowKey = event.keyCode === 39;
+    const isLeftArrowKey = event.keyCode === 37;
+    const isEscKey = event.keyCode === 27;
+
+    if (isLeftArrowKey) {
+      prev_();
+    } else if (isRightArrowKey) {
+      next_();
+    } else if (isEscKey) {
+      hideLightbox_();
     }
+  }
 
-    this.lightbox = _el => {
-        this.hideLightbox();
-        this.currentImage = _el;
-        this.isLightbox = true;
+  /**
+   * Handles image click.
+   * @param {!Element} imageElement
+   * @private
+   */
+  function handleImageClicked_(imageElement) {
+    initKeyListeners_();
+    updateCurrentImage_(imageElement);
+    updateCounter_();
+    checkControlsDisability_();
+    element_.classList.add(Selectors.LIGHTBOX_VISIBLE);
+  }
 
-        var overlay = document.createElement('div');
-        overlay.classList.add('lightbox-overlay');
-        var imageContainer = document.createElement('div');
-        imageContainer.classList.add('lightbox-image');
+  /**
+   * Updates current image.
+   * @param {!Element} imageElement
+   * @private
+   */
+  function updateCurrentImage_(imageElement) {
+    currentImage_ = imageElement;
+    currentIndex_ = +imageElement.getAttribute(Selectors.DATA_INDEX);
+    image_.src = imageElement.src;
+  }
 
-        var image = document.createElement('img');
-        image.src = _el.src;
+  /**
+   * Handles next image.
+   * @private
+   */
+  function next_ () {
+    const isNotLast = currentIndex_ !== imagesArray_.length - 1;
 
-        imageContainer.appendChild(image);
+    isNotLast && handleImageClicked_(imagesArray_[currentIndex_ + 1]);
+  }
 
-        document.querySelector('body').appendChild(overlay);
-        document.querySelector('body').appendChild(imageContainer);
+  /**
+   * Handles previous image.
+   * @private
+   */
+  function prev_() {
+    const isNotFirst = currentIndex_ !== 0;
 
-        prepareControls(_el);
+    isNotFirst && handleImageClicked_(imagesArray_[currentIndex_ - 1]);
+  }
+
+  /**
+   * Hides lightbox.
+   * @private
+   */
+  function hideLightbox_() {
+    element_.classList.remove(Selectors.LIGHTBOX_VISIBLE);
+    removeKeyListeners_();
+  };
+
+  /**
+   * Checks controls disability.
+   * @private
+   */
+  function checkControlsDisability_() {
+    const isFirst = currentIndex_ === 0;
+    const isLast = currentIndex_ === imagesArray_.length -1;
+
+    if (isFirst) {
+      prevControl_.classList.add(Selectors.LIGHTBOX_CONTROL_DISABLED)
+    } else if (isLast) {
+      nextControl_.classList.add(Selectors.LIGHTBOX_CONTROL_DISABLED);
+    } else {
+      prevControl_.classList.remove(Selectors.LIGHTBOX_CONTROL_DISABLED)
+      nextControl_.classList.remove(Selectors.LIGHTBOX_CONTROL_DISABLED);
     }
+  }
 
-    this.next = () => {
-        let imgIndex = getCurrentImageIndex();
-        if (imgIndex === _this.imagesArray.length - 1)
-            return;
-        _this.lightbox(_this.imagesArray[getCurrentImageIndex() + 1]);
-    }
+  /**
+   * Updates counter.
+   * @private
+   */
+  function updateCounter_() {
+    let counter_Html = `<br/>${currentIndex_ + 1} of ${imagesArray_.length}`;
 
-    this.prev = () => {
-        let imgIndex = getCurrentImageIndex();
-        if (imgIndex === 0)
-            return;
-        _this.lightbox(_this.imagesArray[getCurrentImageIndex() - 1]);
-    }
-
-    this.hideLightbox = () => {
-        let overlay = document.querySelector('.lightbox-overlay');
-        let image = document.querySelector('.lightbox-image');
-        let controls = document.querySelector('.lightbox-controls');
-        if (overlay)
-            document.querySelector('body').removeChild(overlay);
-        if (image)
-            document.querySelector('body').removeChild(image);
-        if (controls)
-            document.querySelector('body').removeChild(controls);
-        this.isLightbox = false;
-    };
-
-    function createEscapeListener() {
-        document.addEventListener('keydown', e => {
-
-        });
-    }
-
-    function prepareControls(imgElement) {
-        let controls = document.createElement('div');
-        controls.innerHTML += controlsHtml;
-
-        document.querySelector('body').appendChild(controls.querySelector('.lightbox-controls'));
-
-
-        let imgIndex = getCurrentImageIndex();
-        if (imgIndex > 0) {
-            document.querySelector(".lb-prev").addEventListener('click', () => {
-                _this.prev();
-            })
-        }
-        else {
-            document.querySelector(".lb-prev").classList.add(['lb-disabled'])
-        }
-
-        if (imgIndex < _this.imagesArray.length - 1) {
-            document.querySelector(".lb-next").addEventListener('click', () => {
-                _this.next();
-            })
-        }
-        else {
-            document.querySelector(".lb-next").classList.add(['lb-disabled'])
-        }
-
-        document.querySelector('.lb-close').addEventListener('click', () => {
-            _this.hideLightbox();
-        })
-
-        showCounter();
-
-    }
-
-    function showCounter() {
-        let imgIndex = getCurrentImageIndex();
-        let counter = document.createElement("span");
-        let counter_Html = `<br/>${imgIndex + 1} of ${_this.imagesArray.length}`;
-        if(_this.currentImage.alt){
-            counter_Html += ` - ${_this.currentImage.alt}`;
-        }
-        counter.innerHTML = counter_Html;
-        document.querySelector('.lightbox-image').appendChild(counter);
-    }
-
-    function getCurrentImageIndex() {
-       return +_this.currentImage.getAttribute("data-lightbox-index");
-    }
-
-    function addKeyListeners() {
-        document.removeEventListener('keydown', bindKeys);
-        document.addEventListener('keydown', bindKeys);
-    }
-
-    function bindKeys(e) {
-        if (e.keyCode === 37 && _this.isLightbox) {
-            _this.prev();
-            return;
-        }
-
-        else if (e.keyCode === 39 && _this.isLightbox) {
-            _this.next();
-            return;
-        }
-        else if (e.keyCode === 27 && _this.isLightbox) {
-            _this.hideLightbox();
-            return;
-        }
-    }
+    currentImage_.alt && (counter_Html += ` - ${currentImage_.alt}`);
+    counter_.innerHTML = counter_Html;
+  }
 }
 
 var fsLightbox = new FsLightbox;
+
 fsLightbox.render();
